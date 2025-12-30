@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Phishing Detector - Cyber Verse{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="px-4 py-6 sm:px-0">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-cyan-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Phishing Detector</h1>
+            <p class="text-gray-600">Advanced AI-powered phishing detection for emails, messages, and links</p>
+        </div>
+
+        <!-- Input Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <label for="inputText" class="block text-sm font-medium text-gray-700 mb-2">Paste your message, email, or link</label>
+            <textarea id="inputText" rows="8" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-vertical" placeholder="Paste your email or message here..."></textarea>
+
+            <div class="mt-4 flex flex-col items-center gap-4">
+                <button id="analyzeBtn" class="w-full max-w-md bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-medium py-3 px-6 rounded-lg hover:from-purple-700 hover:to-cyan-600 transition-colors duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <span>Analyze Text</span>
+                </button>
+                <div id="statusArea" class="text-sm text-gray-600 text-center max-w-md" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <!-- Result Section -->
+        <div id="result" class="bg-white rounded-lg shadow-lg p-6 hidden">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="result-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M12 2L4 5v6c0 5 3.8 9.74 8 11 4.2-1.26 8-6 8-11V5l-8-3z" fill="currentColor"/>
+                        <path d="M9.5 11.5l1.8 1.8 3.7-3.7" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div id="classification" class="classification" aria-live="polite"></div>
+                    <div class="text-sm text-gray-600 mt-1">Confidence: <span id="confidence" class="font-medium"></span></div>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-4">
+                <h3 class="font-semibold text-gray-900 mb-2">Analysis Details</h3>
+                <pre id="explanation" class="text-gray-700 whitespace-pre-wrap text-sm"></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+          const analyzeBtn = document.getElementById('analyzeBtn');
+          const input = document.getElementById('inputText');
+          const statusArea = document.getElementById('statusArea');
+          const resultBox = document.getElementById('result');
+          const clsEl = document.getElementById('classification');
+          const confEl = document.getElementById('confidence');
+          const expEl = document.getElementById('explanation');
+
+          function setLoading(on){
+            analyzeBtn.disabled = on;
+            analyzeBtn.innerHTML = on ?
+                '<span class="spinner" aria-hidden="true"></span><span>Analyzing…</span>' :
+                '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg><span>Analyze Text</span>';
+            statusArea.innerHTML = on ? '<span class="spinner" aria-hidden="true"></span> Analyzing…' : '';
+          }
+
+          async function analyze(){
+            const text = input.value.trim();
+            if(!text){
+              statusArea.textContent = 'Please enter text to analyze.';
+              return;
+            }
+
+            setLoading(true);
+            resultBox.style.display = 'none';
+            // reset previous state
+            resultBox.classList.remove('spam','safe');
+
+            try{
+              const res = await fetch('/analyze_full', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+              });
+
+              if(!res.ok){
+                const txt = await res.text();
+                throw new Error(`Server returned ${res.status}: ${txt}`);
+              }
+
+              const data = await res.json();
+              const cls = (data.classification || 'unknown').toLowerCase();
+
+              // simple badge text + class
+              if (cls === 'spam') {
+                clsEl.textContent = 'SPAM DETECTED';
+                clsEl.className = 'classification spam';
+                resultBox.classList.add('spam');
+              } else if (cls === 'safe') {
+                clsEl.textContent = 'SAFE';
+                clsEl.className = 'classification safe';
+                resultBox.classList.add('safe');
+              } else {
+                clsEl.textContent = (data.classification || 'UNKNOWN').toUpperCase();
+                clsEl.className = 'classification';
+              }
+
+              confEl.textContent = data.confidence ?? 'N/A';
+              expEl.textContent = data.explanation ?? '';
+
+              resultBox.style.display = 'block';
+              statusArea.textContent = '';
+            }catch(err){
+              console.error(err);
+              statusArea.textContent = 'Error: ' + err.message;
+            }finally{
+              setLoading(false);
+            }
+          }
+
+          analyzeBtn.addEventListener('click', analyze);
+
+          // allow Cmd/Ctrl+Enter to submit
+          input.addEventListener('keydown', (e)=>{
+            if((e.ctrlKey || e.metaKey) && e.key === 'Enter') analyze();
+          });
+        </script>
+
+<style>
+.safe .result-icon {
+    background: rgba(16,185,129,0.06);
+    border: 1px solid rgba(16,185,129,0.14);
+    color: #10b981;
+    box-shadow: 0 6px 18px rgba(16,185,129,0.06);
+}
+
+.spam .result-icon {
+    background: rgba(239,68,68,0.06);
+    border: 1px solid rgba(239,68,68,0.14);
+    color: #ef4444;
+    box-shadow: 0 6px 18px rgba(239,68,68,0.06);
+}
+
+.result-icon {
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background: #fff7f7;
+    border: 1px solid rgba(0,0,0,0.06);
+    color: rgba(239,68,68,1);
+    transition: all .18s ease;
+}
+
+.classification {
+    font-weight:700;
+    font-size:16px;
+    color:#fff;
+    display:inline-block;
+}
+
+.classification.safe {
+    background: linear-gradient(90deg, #10b981, #34d399);
+    box-shadow: 0 8px 26px rgba(16,185,129,0.12), 0 0 16px rgba(52,211,153,0.06);
+    padding:6px 12px;
+    border-radius:999px;
+}
+
+.classification.spam {
+    background: linear-gradient(90deg,#ef4444,#fb7185);
+    box-shadow: 0 8px 26px rgba(239,68,68,0.12), 0 0 16px rgba(251,113,133,0.06);
+    padding:6px 12px;
+    border-radius:999px;
+}
+
+.spinner {
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    border:3px solid rgba(0,0,0,0.08);
+    border-top-color:#2563eb;
+    animation:spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform:rotate(360deg);
+    }
+}
+</style>
+{% endblock %}

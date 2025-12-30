@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Cyber Verse{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="px-4 py-6 sm:px-0">
+        <!-- Intro Paragraph -->
+        <div class="text-center mb-16">
+            <h1 class="text-4xl font-bold text-gray-900 mb-8">
+                Welcome to <span class="bg-gradient-to-r from-purple-600 to-cyan-500 bg-clip-text text-transparent">Cyber Verse</span>
+            </h1>
+            <p class="text-xl text-gray-700 leading-relaxed max-w-4xl mx-auto">
+                Cyber Verse is a simple and reliable tool designed to help you make sure your computer and online environment are safe. In today's digital world, protecting your personal information is more important than ever. Cyber threats like phishing attacks and weak passwords can easily put your data at risk. Cyber Verse helps you stay one step ahead by giving you easy-to-use tools that improve your digital security and protect your privacy.
+            </p>
+        </div>
+
+        <!-- Phishing Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Phishing Detection</h2>
+                <p class="text-lg text-gray-700 leading-relaxed mb-8">
+                    Phishing attacks are one of the most common cyber threats, often designed to trick you into sharing sensitive information such as passwords or personal details. Cyber Verse's Phishing Detection Tool helps you identify suspicious links, emails, or websites before they can cause harm. Simply paste the link or text content into the tool, and it will analyze phishing risks and warn you if something looks unsafe — helping you avoid scams and protect your data.
+                </p>
+                <a href="/phishing-detector" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-medium rounded-lg hover:from-purple-700 hover:to-cyan-600 transition-colors duration-200 text-lg shadow-lg">
+                    Try Now
+                    <svg class="ml-3 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+            <div class="flex justify-center">
+                <img src="/static/assets/phishing.png" alt="Phishing Detection Illustration" class="w-160 h-85 object-cover rounded-2xl shadow-xl">
+            </div>
+        </div>
+
+        <!-- Password Checker Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+            <div class="flex justify-center order-2 lg:order-1">
+                <img src="/static/assets/password.png" alt="Password Checker Illustration" class="w-150 h-80 object-cover rounded-2xl shadow-xl">
+            </div>
+            <div class="order-1 lg:order-2">
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Password Checker</h2>
+                <p class="text-lg text-gray-700 leading-relaxed mb-8">
+                    Strong passwords are a key part of keeping any of your accounts secure. The Password Checker in Cyber Verse helps you evaluate how strong your password is and whether it can be easily guessed or cracked. Enter your password securely, and the tool will analyze its strength and provide feedback on how to improve it. Using strong, unique passwords greatly reduces the risk of unauthorized access to your accounts.
+                </p>
+                <a href="/password-checker" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-cyan-500 text-white font-medium rounded-lg hover:from-purple-700 hover:to-cyan-600 transition-colors duration-200 text-lg shadow-lg">
+                    Try Now
+                    <svg class="ml-3 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-white rounded-lg p-8 text-center">
+            <div class="max-w-4xl mx-auto">
+                <h3 class="text-2xl font-bold mb-4">Stay Safe Online</h3>
+                <p class="text-gray-300 mb-6">
+                    Cyber Verse is committed to helping you maintain your digital security. 
+                    Explore our tools and stay informed about the latest cybersecurity best practices.
+                </p>
+                <div class="flex justify-center space-x-6">
+                    <a href="/phishing-detector" class="text-purple-400 hover:text-purple-300 transition-colors">Phishing Detector</a>
+                    <a href="/password-checker" class="text-cyan-400 hover:text-cyan-300 transition-colors">Password Checker</a>
+                    <a href="/about" class="text-gray-300 hover:text-white transition-colors">About</a>
+                </div>
+                <div class="mt-6 pt-6 border-t border-gray-700">
+                    <p class="text-sm text-gray-400">
+                        © 2025 Cyber Verse. Empowering cybersecurity awareness.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+{% endblock %}

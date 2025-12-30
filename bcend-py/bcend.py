@@ -1,8 +1,13 @@
 # backend.py
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 import requests
 import google.generativeai as genai
+import password
+from datetime import datetime
 
 app = FastAPI()
 
@@ -15,9 +20,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount static files and templates
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
+
 # Configure Gemini API
-genai.configure(api_key="AIzaSyD9OVS0FF3B8V__6XDI0BeayM3URb_iY6g") 
+genai.configure(api_key="AIzaSyD9OVS0FF3B8V__6XDI0BeayM3URb_iY6g")
 MODEL_API_URL = "http://127.0.0.1:5000/analyze"  # Flask model
+
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse("home.html", {"request": request, "active_page": "home"})
+
+@app.get("/phishing-detector", response_class=HTMLResponse)
+async def phishing_detector(request: Request):
+    return templates.TemplateResponse("phishing_detector.html", {"request": request, "active_page": "phishing-detector"})
+
+@app.get("/password-checker", response_class=HTMLResponse)
+async def password_checker(request: Request):
+    return templates.TemplateResponse("password_checker.html", {"request": request, "active_page": "password-checker"})
+
+@app.get("/about", response_class=HTMLResponse)
+async def about(request: Request):
+    return templates.TemplateResponse("about.html", {"request": request, "active_page": "about"})
 
 @app.post("/analyze_full")
 async def analyze_full(request: Request):
@@ -51,5 +76,38 @@ async def analyze_full(request: Request):
     return {
         "classification": classification,
         "confidence": confidence,
+        "explanation": explanation,
+    }
+
+@app.post("/check_password")
+async def check_password(request: Request):
+    data = await request.json()
+    pwd = data.get("password", "")
+    if not pwd:
+        return {"error": "No password provided"}
+
+    # Step 1 — Calculate strength and entropy
+    try:
+        strength, entropy = password.check_pw_strength(pwd)
+    except Exception as e:
+        return {"error": f"Password check failed: {e}"}
+
+    # Step 2 — Gemini explanation
+    prompt = (
+        f"The password has strength '{strength}' "
+        f"with entropy {entropy:.2f}.\n\n"
+        "Explain in 2 lines and in simple terms why this password is secure or not, "
+        "and provide brief suggestions for improvement if needed."
+    )
+    try:
+        gemini_model = genai.GenerativeModel("gemini-2.5-flash")
+        explanation_resp = gemini_model.generate_content(prompt)
+        explanation = explanation_resp.text if hasattr(explanation_resp, "text") else str(explanation_resp)
+    except Exception as e:
+        explanation = f"Could not get explanation: {e}"
+
+    return {
+        "strength": strength,
+        "entropy": entropy,
         "explanation": explanation,
     }

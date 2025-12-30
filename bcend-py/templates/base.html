@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Cyber Verse{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'bg': '#eef2ff',
+                        'card': '#ffffff',
+                        'muted': '#6b7280',
+                        'accent': '#2563eb',
+                        'neon1': '#7c3aed',
+                        'neon2': '#06b6d4',
+                        'success': '#059669',
+                        'danger': '#dc2626',
+                    },
+                    borderRadius: {
+                        'radius': '12px',
+                    },
+                    boxShadow: {
+                        'shadow': '0 8px 30px rgba(16,24,40,0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            color: #0f172a;
+            min-height: 100vh;
+            background:
+                radial-gradient(ellipse at 10% 10%, rgba(124,58,237,0.06), transparent 10%),
+                radial-gradient(ellipse at 90% 90%, rgba(6,182,212,0.04), transparent 12%),
+                linear-gradient(180deg, #eef2ff, #fbfdff 60%);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-lg border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/">
+                            <img src="/static/assets/logo-cyber.png" alt="Cyber Verse Logo" class="h-20 w-auto">
+                        </a>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="/" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-base font-medium {% if active_page == 'home' %}border-indigo-500 text-purple-500{% endif %}">
+                            Home
+                        </a>
+                        <a href="/phishing-detector" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-base font-medium {% if active_page == 'phishing_detector' %}border-indigo-500 text-purple-500{% endif %}">
+                            Phishing Detector
+                        </a>
+                        <a href="/password-checker" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-base font-medium {% if active_page == 'password_checker' %}border-indigo-500 text-purple-500{% endif %}">
+                            Password Checker
+                        </a>
+                        <a href="/about" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-base font-medium {% if active_page == 'about' %}border-indigo-500 text-purple-500{% endif %}">
+                            About
+                        </a>
+                    </div>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="-mr-2 flex items-center sm:hidden">
+                    <button type="button" class="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div class="sm:hidden" id="mobile-menu">
+            <div class="pt-2 pb-3 space-y-1">
+                <a href="/" class="bg-indigo-50 border-indigo-500 text-indigo-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium {% if active_page == 'home' %}border-indigo-500 text-indigo-700 bg-indigo-50{% endif %}">Home</a>
+                <a href="/phishing-detector" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium {% if active_page == 'phishing_detector' %}border-indigo-500 text-indigo-700 bg-indigo-50{% endif %}">Phishing Detector</a>
+                <a href="/password-checker" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium {% if active_page == 'password_checker' %}border-indigo-500 text-indigo-700 bg-indigo-50{% endif %}">Password Checker</a>
+                <a href="/about" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium {% if active_page == 'about' %}border-indigo-500 text-indigo-700 bg-indigo-50{% endif %}">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.querySelector('[aria-controls="mobile-menu"]');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            const expanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+            mobileMenuButton.setAttribute('aria-expanded', !expanded);
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
