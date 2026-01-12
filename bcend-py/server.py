@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import joblib
-import 
+import os
 
 app = Flask(__name__)
 
@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # Path to your model folder and file
 MODEL_PATH = os.path.join(BASE_DIR, "model", "spam_model.joblib")
 model = joblib.load(MODEL_PATH)
-vectorizer = joblib.load("/model/vectorizer.joblib")
+vectorizer = joblib.load("model/vectorizer.joblib")
 
 @app.route("/analyze", methods=["POST"])
 def analyze_text():
