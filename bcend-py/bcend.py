@@ -8,6 +8,11 @@ import requests
 import google.generativeai as genai
 import password
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv(dotenv_path=".gitignore/.env")
 
 app = FastAPI()
 
@@ -25,7 +30,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyD9OVS0FF3B8V__6XDI0BeayM3URb_iY6g")
+genai.configure(api_key=os.getenv('my_key'))
 MODEL_API_URL = "http://127.0.0.1:5000/analyze"  # Flask model
 
 @app.get("/", response_class=HTMLResponse)
