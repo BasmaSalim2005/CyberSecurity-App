@@ -9,8 +9,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Path to your model folder and file
 MODEL_PATH = os.path.join(BASE_DIR, "model", "spam_model.joblib")
+VECTORIZER_PATH = os.path.join(BASE_DIR, "model", "vectorizer.joblib")
 model = joblib.load(MODEL_PATH)
-vectorizer = joblib.load("model/vectorizer.joblib")
+vectorizer = joblib.load(VECTORIZER_PATH)
 
 @app.route("/analyze", methods=["POST"])
 def analyze_text():
