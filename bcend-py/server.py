@@ -4,8 +4,8 @@ import joblib
 app = Flask(__name__)
 
 # Load the saved model and vectorizer
-model = joblib.load("model/spam_model.joblib")
-vectorizer = joblib.load("model/vectorizer.joblib")
+model = joblib.load("/model/spam_model.joblib")
+vectorizer = joblib.load("/model/vectorizer.joblib")
 
 @app.route("/analyze", methods=["POST"])
 def analyze_text():
