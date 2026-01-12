@@ -1,9 +1,14 @@
 from flask import Flask, request, jsonify
 import joblib
+import os
 
 app = Flask(__name__)
 
-# Load the saved model and vectorizer
+# Load the saved model and 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Path to your model folder and file
+MODEL_PATH = os.path.join(BASE_DIR, "model", "spam_model.joblib")
 model = joblib.load("/model/spam_model.joblib")
 vectorizer = joblib.load("/model/vectorizer.joblib")
 
