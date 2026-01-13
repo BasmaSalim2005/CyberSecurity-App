@@ -8,6 +8,8 @@ import joblib
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
+import json
+import datetime
 import password
 
 # =====================
@@ -160,8 +162,31 @@ async def submit_feedback(request: Request):
     if not message:
         return {"error": "Message is required"}
 
-    # Here you could save to database, send email, etc.
-    # For now, just log it
+    # Save feedback to JSON file
+    feedback_entry = {
+        "timestamp": datetime.datetime.now().isoformat(),
+        "name": name,
+        "email": email,
+        "message": message
+    }
+
+    try:
+        # Read existing feedback
+        feedback_data = []
+        if os.path.exists("feedback.json"):
+            with open("feedback.json", "r", encoding="utf-8") as f:
+                feedback_data = json.load(f)
+
+        # Append new feedback
+        feedback_data.append(feedback_entry)
+
+        # Write back to file
+        with open("feedback.json", "w", encoding="utf-8") as f:
+            json.dump(feedback_data, f, indent=2, ensure_ascii=False)
+
+    except Exception as e:
+        print(f"Error saving feedback: {e}")
+
     print(f"Feedback received from {name} ({email}): {message}")
 
     return {"message": "Feedback submitted successfully"}
