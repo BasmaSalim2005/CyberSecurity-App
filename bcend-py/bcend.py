@@ -86,12 +86,20 @@ async def analyze_full(request: Request):
     if not text:
         return {"error": "No text provided"}
 
-    X = vectorizer.transform([text])
-    pred = model.predict(X)[0]
-    prob = model.predict_proba(X)[0].max() * 100
+   
 
-    classification = "spam" if pred == "spam" else "safe"
-    confidence = round(prob, 2)
+    try:
+        X = vectorizer.transform([text])
+        pred = model.predict(X)[0]
+        prob = model.predict_proba(X)[0].max() * 100
+        classification = "spam" if pred == "spam" else "safe"
+        confidence = round(prob, 2)
+    except Exception as e:
+       return {
+            "classification": "error",
+            "confidence": 0,
+            "explanation": f"ML model failed: {e}"
+        }
 
     prompt = (
         f"The following message was classified as '{classification}' "
@@ -140,3 +148,20 @@ async def check_password(request: Request):
         "entropy": entropy,
         "explanation": explanation,
     }
+
+
+@app.post("/submit_feedback")
+async def submit_feedback(request: Request):
+    data = await request.json()
+    name = data.get("name", "")
+    email = data.get("email", "")
+    message = data.get("message", "")
+
+    if not message:
+        return {"error": "Message is required"}
+
+    # Here you could save to database, send email, etc.
+    # For now, just log it
+    print(f"Feedback received from {name} ({email}): {message}")
+
+    return {"message": "Feedback submitted successfully"}
