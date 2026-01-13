@@ -32,8 +32,8 @@ app.add_middleware(
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-MODEL_PATH = os.path.join(BASE_DIR, "model", "spam_model.joblib")
-VECTORIZER_PATH = os.path.join(BASE_DIR, "model", "vectorizer.joblib")
+MODEL_PATH = os.path.join(BASE_DIR, "bcend-py", "model", "spam_model.joblib")
+VECTORIZER_PATH = os.path.join(BASE_DIR, "bcend-py", "model", "vectorizer.joblib")
 
 # =====================
 # LOAD ML MODEL
