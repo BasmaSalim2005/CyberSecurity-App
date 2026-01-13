@@ -86,12 +86,14 @@ async def analyze_full(request: Request):
     if not text:
         return {"error": "No text provided"}
 
-    X = vectorizer.transform([text])
-    pred = model.predict(X)[0]
-    prob = model.predict_proba(X)[0].max() * 100
-
-    classification = "spam" if pred == "spam" else "safe"
-    confidence = round(prob, 2)
+    try:
+        X = vectorizer.transform([text])
+        pred = model.predict(X)[0]
+        prob = model.predict_proba(X)[0].max() * 100
+        classification = "spam" if pred == "spam" else "safe"
+        confidence = round(prob, 2)
+    except Exception as e:
+        return {"error": f"ML model failed: {e}"}
 
     prompt = (
         f"The following message was classified as '{classification}' "
@@ -111,6 +113,7 @@ async def analyze_full(request: Request):
         "confidence": confidence,
         "explanation": explanation,
     }
+
 
 
 @app.post("/check_password")
